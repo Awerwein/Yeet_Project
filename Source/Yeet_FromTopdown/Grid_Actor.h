@@ -63,6 +63,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UProceduralMeshComponent* ProceduralMesh;
 
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,6 +73,9 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 		virtual void CreateLine(const FVector Start, const FVector End, const float& Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
+
+	UFUNCTION(BlueprintCallable)
+		virtual void Draw();
 
 	UFUNCTION(BlueprintPure)
 		float GridWidth() const;

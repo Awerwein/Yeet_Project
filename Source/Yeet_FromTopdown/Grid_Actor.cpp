@@ -23,6 +23,7 @@ AGrid_Actor::AGrid_Actor()
 	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMesh"));
 
 
+
 }
 
 // Called when the game starts or when spawned
@@ -30,36 +31,8 @@ void AGrid_Actor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	float LineStart = 0.0f;
-	float LineEnd = 0.0f;
 
-	TArray<FVector> LineVertices;
-	TArray<int32> LineTriangles;
 
-	//horizontal line geometry
-	for (size_t i = 0; i < NumRows; i++)
-	{
-		LineStart = i * TileSize;
-		LineEnd = GridWidth();
-
-		CreateLine(FVector(LineStart, 0.0f, 0.0f), FVector(LineStart, LineEnd, 0.0f), LineThickness, LineVertices, LineTriangles);
-	}
-
-	//vertical line geometry
-	for (size_t i = 0; i < NumColumns; i++)
-	{
-		LineStart = i * TileSize;
-		LineEnd = GridHight();
-
-		CreateLine(FVector(0.0f, LineStart, 0.0f), FVector(LineEnd, LineEnd, 0.0f), LineThickness, LineVertices, LineTriangles);
-	}
-
-	TArray<FVector> normals;
-	TArray<FVector2D> UV0;
-	TArray<FProcMeshTangent> tangents;
-	TArray<FLinearColor> vertexColors;
-
-	ProceduralMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
 
 
 }
@@ -95,6 +68,43 @@ void AGrid_Actor::CreateLine(const FVector Start, const FVector End, const float
 	Vertices += {Zero, One, Two, Three};
 
 
+}
+
+void AGrid_Actor::Draw()
+{
+
+
+	float LineEnd = 0.0f;
+	float X_i = 0.0f;
+	float Y_i = 0.0f;
+
+	TArray<FVector> LineVertices;
+	TArray<int32> LineTriangles;
+
+	//horizontal line geometry
+	for (size_t i = 0; i < NumRows+1; i++)
+	{
+		Y_i = i * TileSize;
+		LineEnd = GridWidth();
+
+		CreateLine(FVector(0.0f, Y_i, 0.0f), FVector(LineEnd, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
+	}
+
+	//vertical line geometry
+	for (size_t i = 0; i < NumColumns+1; i++)
+	{
+		X_i = i * TileSize;
+		LineEnd = GridHight();
+
+		CreateLine(FVector(X_i, 0.0f, 0.0f), FVector(X_i, LineEnd, 0.0f), LineThickness, LineVertices, LineTriangles);
+	}
+
+	TArray<FVector> normals;
+	TArray<FVector2D> UV0;
+	TArray<FProcMeshTangent> tangents;
+	TArray<FLinearColor> vertexColors;
+
+	ProceduralMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
 }
 
 float AGrid_Actor::GridWidth() const
@@ -138,3 +148,4 @@ void AGrid_Actor::TileToGrid(const int& Row, const int& Column, const bool Cente
 void AGrid_Actor::SetSelectedTile(const int& Row, const int& Column)
 {
 }
+
