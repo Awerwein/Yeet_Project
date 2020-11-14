@@ -61,9 +61,16 @@ protected:
 		USceneComponent* RootSceneComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		UProceduralMeshComponent* ProceduralMesh;
+		UProceduralMeshComponent* GridMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		UProceduralMeshComponent* SelectionMesh;
 
+	UPROPERTY(EditAnywhere)
+		TArray<FVector> SelectionVertices;
+
+	UPROPERTY(EditAnywhere)
+		TArray<int32> SelectionTriangles;
 
 public:	
 	// Called every frame
@@ -75,7 +82,7 @@ private:
 		virtual void CreateLine(const FVector Start, const FVector End, const float& Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
 	UFUNCTION(BlueprintCallable)
-		virtual void Draw();
+		virtual void DrawGrid();
 
 	UFUNCTION(BlueprintPure)
 		float GridWidth() const;
@@ -84,7 +91,7 @@ private:
 		float GridHight() const;
 
 	UFUNCTION(BlueprintCallable)
-		virtual UMaterialInstanceDynamic* CreateMaterialInstance(const FLinearColor Color, const float Opacity);
+		virtual UMaterialInstanceDynamic* CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh);
 
 public:
 	UFUNCTION(BlueprintCallable)

@@ -9,7 +9,6 @@
 #include "Math/Vector.h"
 
 //class USceneComponent* RootSceneComponent;
-//class UStaticMeshComponent* ProceduralMesh;
 
 
 // Sets default values
@@ -19,8 +18,8 @@ AGrid_Actor::AGrid_Actor()
 	PrimaryActorTick.bCanEverTick = true;
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(("RootSceneComponent"));
 	RootComponent = RootSceneComponent;
-	//ProceduralMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProceduralMesh"));
-	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMesh"));
+
+	GridMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Grid Mesh"));
 
 
 
@@ -70,7 +69,7 @@ void AGrid_Actor::CreateLine(const FVector Start, const FVector End, const float
 
 }
 
-void AGrid_Actor::Draw()
+void AGrid_Actor::DrawGrid()
 {
 
 
@@ -104,7 +103,7 @@ void AGrid_Actor::Draw()
 	TArray<FProcMeshTangent> tangents;
 	TArray<FLinearColor> vertexColors;
 
-	ProceduralMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
+	GridMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
 }
 
 float AGrid_Actor::GridWidth() const
@@ -117,12 +116,12 @@ float AGrid_Actor::GridHight() const
 	return NumRows * TileSize;
 }
 
-UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor Color, const float Opacity)
+UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh)
 {
 	UMaterialInstanceDynamic* LineMaterialInstance = nullptr;
-	if (ProceduralMesh)
+	if (Mesh)
 	{
-		LineMaterialInstance = ProceduralMesh->CreateDynamicMaterialInstance(0, Material);
+		LineMaterialInstance = Mesh->CreateDynamicMaterialInstance(0, Material);
 		LineMaterialInstance->SetVectorParameterValue(FName("Color"), Color);
 		LineMaterialInstance->SetScalarParameterValue(FName("Opacity"), Opacity);
 		
