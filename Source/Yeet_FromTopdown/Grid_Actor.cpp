@@ -20,7 +20,7 @@ AGrid_Actor::AGrid_Actor()
 	RootComponent = RootSceneComponent;
 
 	GridMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Grid Mesh"));
-
+	SelectionMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Selection Mesh"));
 
 
 }
@@ -106,6 +106,24 @@ void AGrid_Actor::DrawGrid()
 	GridMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
 }
 
+void AGrid_Actor::DrawSelection()
+{
+	float Y = TileSize / 2.0f;
+
+	CreateLine(FVector(0.0f, Y, 0.0f), FVector(TileSize, Y, 0.0f), TileSize, SelectionVertices, SelectionTriangles);
+
+	TArray<FVector> normals;
+	TArray<FVector2D> UV0;
+	TArray<FProcMeshTangent> tangents;
+	TArray<FLinearColor> vertexColors;
+
+	SelectionMesh->CreateMeshSection_LinearColor(0, SelectionVertices, SelectionTriangles, normals, UV0, vertexColors, tangents, false);
+
+	SelectionVertices = {};
+	SelectionTriangles = {};
+}
+
+
 float AGrid_Actor::GridWidth() const
 {
 	return NumColumns * TileSize;
@@ -134,6 +152,7 @@ UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor
 
 	return LineMaterialInstance;
 }
+
 
 bool AGrid_Actor::LocationToTile(const FVector& Location, int& Row, int& Column)
 {

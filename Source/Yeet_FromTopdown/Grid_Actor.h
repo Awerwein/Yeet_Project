@@ -93,6 +93,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 		virtual UMaterialInstanceDynamic* CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh);
 
+	UFUNCTION(BlueprintCallable)
+		virtual void DrawSelection();
+
 public:
 	UFUNCTION(BlueprintCallable)
 		virtual bool LocationToTile(const FVector& Location, int& Row, int& Column);
