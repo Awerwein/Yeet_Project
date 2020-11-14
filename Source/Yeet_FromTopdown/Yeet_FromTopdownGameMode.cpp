@@ -4,6 +4,7 @@
 #include "Yeet_FromTopdownPlayerController.h"
 #include "Yeet_FromTopdownCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 AYeet_FromTopdownGameMode::AYeet_FromTopdownGameMode()
 {
@@ -29,4 +30,13 @@ AYeet_FromTopdownGameMode::AYeet_FromTopdownGameMode()
 	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Class NOT LOADED!!!!"));
 	//}
 
+}
+
+TArray <AActor*> AYeet_FromTopdownGameMode::GetGrid()
+{
+	TArray <AActor*> GridActors;
+	//UObject* GridActorClass = GridClass->ClassGeneratedBy;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), GridClass, GridActors);
+	
+	return GridActors;
 }

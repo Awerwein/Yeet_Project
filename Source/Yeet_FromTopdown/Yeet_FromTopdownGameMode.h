@@ -11,11 +11,17 @@ class AYeet_FromTopdownGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+
 public:
 	AYeet_FromTopdownGameMode();
 
-	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Classes)
+	UFUNCTION(BlueprintCallable)
+		TArray<AActor*> GetGrid();
+
+	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<AActor> GridClass;
+
+
 };
 
 

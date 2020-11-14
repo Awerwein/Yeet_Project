@@ -11,6 +11,8 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "GameFramework/GameModeBase.h"
+#include "Yeet_FromTopdownGameMode.h"
 
 AYeet_FromTopdownCharacter::AYeet_FromTopdownCharacter()
 {
@@ -80,11 +82,24 @@ void AYeet_FromTopdownCharacter::Tick(float DeltaSeconds)
 		else if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		{
 			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			FVector CursorFV = TraceHitResult.ImpactNormal;
-			FRotator CursorR = CursorFV.Rotation();
-			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-			CursorToWorld->SetWorldRotation(CursorR);
+			//AYeet_FromTopdownGameMode* GameMode = (AYeet_FromTopdownGameMode*)GetWorld()->GetAuthGameMode();
+			//TArray<AActor*> Grid = GameMode->GetGrid()[0]->GetGrid();
+
+			//TArray<AActor*> Grid = dynamic_cast<GameMode->GridClass> (GameMode->GetGrid());
+
+			if (PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult))
+			{
+				FVector HitLocation = TraceHitResult.Location;
+				//AActor* Tile = Grid[0];
+				
+				FVector CursorFV = TraceHitResult.ImpactNormal;
+				FRotator CursorR = CursorFV.Rotation();
+				CursorToWorld->SetWorldLocation(TraceHitResult.Location);
+				CursorToWorld->SetWorldRotation(CursorR);
+
+			}
+			
+			
 		}
 	}
 }

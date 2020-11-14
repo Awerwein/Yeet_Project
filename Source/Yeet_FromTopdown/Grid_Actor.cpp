@@ -156,7 +156,10 @@ UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor
 
 bool AGrid_Actor::LocationToTile(const FVector& Location, int& Row, int& Column)
 {
-	return false;
+	Row = floor(((Location.X - GetActorLocation().X) / GridWidth()) * NumRows);
+	Column = floor(((Location.Y - GetActorLocation().Y) / GridHight()) * NumRows);
+	bool valid = ((Row >= 0) && Row < NumRows && Column >= 0 && Column < NumColumns);
+	return valid;
 }
 
 void AGrid_Actor::TileToGrid(const int& Row, const int& Column, const bool Center, bool& Valid, FVector2D& GridLocation)
