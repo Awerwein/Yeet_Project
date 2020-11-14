@@ -13,6 +13,9 @@ class AYeet_FromTopdownGameMode : public AGameModeBase
 
 public:
 	AYeet_FromTopdownGameMode();
+
+	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Classes)
+		TSubclassOf<AActor> GridClass;
 };
 
 

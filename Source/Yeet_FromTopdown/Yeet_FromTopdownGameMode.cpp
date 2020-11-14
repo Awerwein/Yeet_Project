@@ -16,4 +16,17 @@ AYeet_FromTopdownGameMode::AYeet_FromTopdownGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<AActor> GridBPClass(TEXT("/Game/blueprint/Grid_bp"));
+	if (GridBPClass.Class != NULL)
+	{
+		GridClass = GridBPClass.Class;
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Class LOADED!!!!"));
+	}
+	//else
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Class NOT LOADED!!!!"));
+	//}
+
 }
