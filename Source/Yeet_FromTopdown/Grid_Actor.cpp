@@ -99,7 +99,7 @@ void AGrid_Actor::DrawGrid()
 
 	TArray<FVector> LineVertices;
 	TArray<int32> LineTriangles;
-	TArray<int32> Nurbs_corners;
+	TArray<int32> ControlVectorIndices;
 
 	//horizontal line geometry
 	for (size_t i = 0; i < NumRows+1; i++)
@@ -143,20 +143,22 @@ void AGrid_Actor::DrawGrid()
 			Size = LineVertices.Num();
 			if (i< NumColumns && j < NumRows)
 			{
-				Nurbs_corners += {Size - 3};
+				ControlVectorIndices += {Size - 3};
 			}
 			if (i > 0  && j < NumRows)
 			{
-				Nurbs_corners += {Size - 2};
+				ControlVectorIndices += {Size - 2};
 			}
 			if (i < NumColumns && j > 0)
 			{
-				Nurbs_corners += {Size - 1};
+				ControlVectorIndices += {Size - 1};
 			}
 			if (i > 0 && j > 0)
 			{
-				Nurbs_corners += {Size};
+				ControlVectorIndices += {Size};
 			}
+
+
 		}
 	}
 
