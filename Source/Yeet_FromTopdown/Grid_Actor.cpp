@@ -59,10 +59,10 @@ void AGrid_Actor::CreateLine(const FVector Start, const FVector End, const float
 	//TArray<int32> NewVerticesIndex = {Size+2, Size +1, Size, Size +2, Size +3, Size +1};
 	Triangles += {Size + 2, Size + 1, Size, Size + 2, Size + 3, Size + 1};
 
-	FVector Zero = Start + (ThicknessDirection * HalfThickness);
-	FVector Two = Start - (ThicknessDirection * HalfThickness);
-	FVector One = End + (ThicknessDirection * HalfThickness);
-	FVector Three = End - (ThicknessDirection * HalfThickness);
+	FVector Zero = Start + (LineVector * HalfThickness) + (ThicknessDirection * HalfThickness);
+	FVector Two = Start + (LineVector * HalfThickness) - (ThicknessDirection * HalfThickness);
+	FVector One = End - (LineVector * HalfThickness) + (ThicknessDirection * HalfThickness);
+	FVector Three = End - (LineVector * HalfThickness) - (ThicknessDirection * HalfThickness);
 
 	Vertices += {Zero, One, Two, Three};
 
@@ -76,6 +76,11 @@ void AGrid_Actor::DrawGrid()
 	float LineEnd = 0.0f;
 	float X_i = 0.0f;
 	float Y_i = 0.0f;
+	float X_start = 0.0f;
+	float X_end = 0.0f;
+	float Y_start = 0.0f;
+	float Y_end = 0.0f;
+
 
 	TArray<FVector> LineVertices;
 	TArray<int32> LineTriangles;
@@ -85,8 +90,14 @@ void AGrid_Actor::DrawGrid()
 	{
 		Y_i = i * TileSize;
 		LineEnd = GridWidth();
+		for (size_t j = 0; j < NumColumns; j++)
+		{
+			X_start = j * TileSize;
+			X_end = X_start + TileSize;
+			CreateLine(FVector(X_start, Y_i, 0.0f), FVector(X_end, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
+		}
 
-		CreateLine(FVector(0.0f, Y_i, 0.0f), FVector(LineEnd, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
+		
 	}
 
 	//vertical line geometry
@@ -94,8 +105,13 @@ void AGrid_Actor::DrawGrid()
 	{
 		X_i = i * TileSize;
 		LineEnd = GridHight();
-
-		CreateLine(FVector(X_i, 0.0f, 0.0f), FVector(X_i, LineEnd, 0.0f), LineThickness, LineVertices, LineTriangles);
+		for (size_t j = 0; j < NumRows; j++)
+		{
+			Y_start = j * TileSize;
+			Y_end = Y_start + TileSize;
+			CreateLine(FVector(X_i, Y_start, 0.0f), FVector(X_i, Y_end, 0.0f), LineThickness, LineVertices, LineTriangles);
+		}
+		
 	}
 
 	TArray<FVector> normals;
