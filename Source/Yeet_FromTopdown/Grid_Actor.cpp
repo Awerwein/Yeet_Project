@@ -95,10 +95,11 @@ void AGrid_Actor::DrawGrid()
 	float X_end = 0.0f;
 	float Y_start = 0.0f;
 	float Y_end = 0.0f;
-
+	int32 Size = 0;
 
 	TArray<FVector> LineVertices;
 	TArray<int32> LineTriangles;
+	TArray<int32> Nurbs_corners;
 
 	//horizontal line geometry
 	for (size_t i = 0; i < NumRows+1; i++)
@@ -138,6 +139,24 @@ void AGrid_Actor::DrawGrid()
 		{
 			Y_i = j * TileSize; //should be Y_j all along
 			CreateCorner(FVector(X_i, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
+			//corners for nurbs
+			Size = LineVertices.Num();
+			if (i< NumColumns && j < NumRows)
+			{
+				Nurbs_corners += {Size - 3};
+			}
+			if (i > 0  && j < NumRows)
+			{
+				Nurbs_corners += {Size - 2};
+			}
+			if (i < NumColumns && j > 0)
+			{
+				Nurbs_corners += {Size - 1};
+			}
+			if (i > 0 && j > 0)
+			{
+				Nurbs_corners += {Size};
+			}
 		}
 	}
 
