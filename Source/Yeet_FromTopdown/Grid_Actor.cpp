@@ -69,6 +69,21 @@ void AGrid_Actor::CreateLine(const FVector Start, const FVector End, const float
 
 }
 
+void AGrid_Actor::CreateCorner(const FVector Start, const float& Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles)
+{
+	float HalfThickness = Thickness / 2.0f;
+	int32 Size = Vertices.Num();
+	Triangles += {Size + 2, Size + 1, Size, Size + 2, Size + 3, Size + 1};
+
+	FVector Zero = Start + FVector(1.0f * HalfThickness, 1.0f * HalfThickness, 0.0f);
+	FVector Two = Start + FVector(1.0f * HalfThickness, -1.0f * HalfThickness, 0.0f);
+	FVector One = Start + FVector(-1.0f * HalfThickness, 1.0f * HalfThickness, 0.0f);
+	FVector Three = Start + FVector(-1.0f * HalfThickness, -1.0f * HalfThickness, 0.0f);
+
+	Vertices += {Zero, One, Two, Three};
+
+}
+
 void AGrid_Actor::DrawGrid()
 {
 
@@ -112,6 +127,18 @@ void AGrid_Actor::DrawGrid()
 			CreateLine(FVector(X_i, Y_start, 0.0f), FVector(X_i, Y_end, 0.0f), LineThickness, LineVertices, LineTriangles);
 		}
 		
+	}
+
+	//corner geometry
+	//inefficient, but readable
+	for (size_t i = 0; i < NumColumns+1; i++)
+	{
+		X_i = i * TileSize;
+		for (size_t j = 0; j < NumRows+1; j++)
+		{
+			Y_i = j * TileSize; //should be Y_j all along
+			CreateCorner(FVector(X_i, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
+		}
 	}
 
 	TArray<FVector> normals;

@@ -82,6 +82,9 @@ private:
 		virtual void CreateLine(const FVector Start, const FVector End, const float& Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
 	UFUNCTION(BlueprintCallable)
+		virtual void CreateCorner(const FVector Start, const float& Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
+
+	UFUNCTION(BlueprintCallable)
 		virtual void DrawGrid();
 
 	UFUNCTION(BlueprintPure)
