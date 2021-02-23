@@ -198,6 +198,77 @@ float AGrid_Actor::GridHight() const
 	return NumRows * TileSize;
 }
 
+FVector AGrid_Actor::BaseFuction(int i, int N, FVector u, const TArray<FVector>& KnotVector)
+{
+	//base fuction for B-Splines
+	// 0 <= i <= M
+	// N <= M
+	// z dim is disregarded
+	// int M = ControllPoints.Num() - 1;
+	FVector out = FVector(-1.0f, -1.0f, 0.0f);
+
+	if (N == 0)
+	{
+		if (KnotVector[i].X <= u.X && u.X < KnotVector[i+1].X)
+		{
+			out.X = 1.0f;
+		}
+		else
+		{
+			out.X = 0.0f;
+		}
+
+		if (KnotVector[i].Y <= u.Y && u.Y < KnotVector[i + 1].Y)
+		{
+			out.Y = 1.0f;
+		}
+		else
+		{
+			out.Y = 0.0f;
+		}
+		
+	}
+	else
+	{
+		//X
+		if (KnotVector[i+N].X != KnotVector[i].X && KnotVector[i + N + 1].X != KnotVector[i + 1].X)
+		{
+			out.X = ((u.X - KnotVector[i].X) / (KnotVector[i + N].X - KnotVector[i].X)) * BaseFuction(i, N-1, u, KnotVector).X + (( KnotVector[i+ 1+ N].X - u.X) / (KnotVector[i + 1 + N].X - KnotVector[i+1].X)) * BaseFuction(i+1, N - 1, u, KnotVector).X;
+		}
+		else if (KnotVector[i + N].X != KnotVector[i].X && KnotVector[i + N + 1].X == KnotVector[i + 1].X)
+		{
+			out.X = ((u.X - KnotVector[i].X) / (KnotVector[i + N].X - KnotVector[i].X)) * BaseFuction(i, N - 1, u, KnotVector).X;
+		}
+		else if (KnotVector[i + N].X == KnotVector[i].X && KnotVector[i + N + 1].X != KnotVector[i + 1].X)
+		{
+			out.X = ((KnotVector[i + 1 + N].X - u.X) / (KnotVector[i + 1 + N].X - KnotVector[i + 1].X)) * BaseFuction(i + 1, N - 1, u, KnotVector).X;
+		}
+		else
+		{
+			out.X = 0.0f;
+		}
+		//Y
+		if (KnotVector[i + N].Y != KnotVector[i].Y && KnotVector[i + N + 1].Y != KnotVector[i + 1].Y)
+		{
+			out.Y = ((u.Y - KnotVector[i].Y) / (KnotVector[i + N].Y - KnotVector[i].Y)) * BaseFuction(i, N - 1, u, KnotVector).Y + ((KnotVector[i + 1 + N].Y - u.Y) / (KnotVector[i + 1 + N].Y - KnotVector[i + 1].Y)) * BaseFuction(i + 1, N - 1, u, KnotVector).Y;
+		}
+		else if (KnotVector[i + N].Y != KnotVector[i].Y && KnotVector[i + N + 1].Y == KnotVector[i + 1].Y)
+		{
+			out.Y = ((u.Y - KnotVector[i].Y) / (KnotVector[i + N].Y - KnotVector[i].Y)) * BaseFuction(i, N - 1, u, KnotVector).Y;
+		}
+		else if (KnotVector[i + N].Y == KnotVector[i].Y && KnotVector[i + N + 1].Y != KnotVector[i + 1].Y)
+		{
+			out.Y = ((KnotVector[i + 1 + N].Y - u.Y) / (KnotVector[i + 1 + N].Y - KnotVector[i + 1].Y))* BaseFuction(i + 1, N - 1, u, KnotVector).Y;
+		}
+		else
+		{
+			out.Y = 0.0f;
+		}
+
+	}
+	return out; //CHANGE to vektor
+}
+
 UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh)
 {
 	UMaterialInstanceDynamic* LineMaterialInstance = nullptr;
