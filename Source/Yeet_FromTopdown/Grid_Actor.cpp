@@ -83,7 +83,7 @@ void AGrid_Actor::CreateCorner(const FVector Start, const float& Thickness, TArr
 	Vertices += {Zero, One, Two, Three};
 
 }
-#pragma optimize( "", off )
+//#pragma optimize( "", off )
 void AGrid_Actor::DrawGrid()
 {
 
@@ -188,28 +188,37 @@ void AGrid_Actor::DrawGrid()
 	TArray<FVector> ControllPoints = {};
 	int t = 1; //2^t subdivisions
 
-	for (size_t i = 0; i < 4; i += 4)
-	{
-		ControllPoints += {LineVertices[ControlVectorIndices[i]]};
-		for (size_t j = 1; j < 3; j++)
-		{
-			ControllPoints += {LineVertices[ControlVectorIndices[i]] + (LineVertices[ControlVectorIndices[i + 1]] - LineVertices[ControlVectorIndices[i]]) * j / (2^t)};
-		}
-		for (size_t k = 1; k < 3; k++)
-		{
-			ControllPoints += {LineVertices[ControlVectorIndices[i + 1]] + (LineVertices[ControlVectorIndices[i + 2]] - LineVertices[ControlVectorIndices[i + 1]]) * k / (2 ^ t)};
-		}
-		for (size_t l = 1; l < 3; l++)
-		{
-			ControllPoints += {LineVertices[ControlVectorIndices[i + 2]] + (LineVertices[ControlVectorIndices[i + 3]] - LineVertices[ControlVectorIndices[i + 2]]) * l / (2 ^ t)};
-		}
-		for (size_t m = 1; m < 3; m++)
-		{
-			ControllPoints += {LineVertices[ControlVectorIndices[i + 3]] + (LineVertices[ControlVectorIndices[i + 0]] - LineVertices[ControlVectorIndices[i + 3]]) * m / (2 ^ t)};
-		}
+	//for (size_t i = 0; i < 4; i += 4)
+	//{
+	//	ControllPoints += {LineVertices[ControlVectorIndices[i]]};
+	//	for (size_t j = 1; j < 3; j++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i]] + (LineVertices[ControlVectorIndices[i + 1]] - LineVertices[ControlVectorIndices[i]]) * j / (2^t)};
+	//	}
+	//	for (size_t k = 1; k < 3; k++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i + 1]] + (LineVertices[ControlVectorIndices[i + 2]] - LineVertices[ControlVectorIndices[i + 1]]) * k / (2 ^ t)};
+	//	}
+	//	for (size_t l = 1; l < 3; l++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i + 2]] + (LineVertices[ControlVectorIndices[i + 3]] - LineVertices[ControlVectorIndices[i + 2]]) * l / (2 ^ t)};
+	//	}
+	//	for (size_t m = 1; m < 3; m++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i + 3]] + (LineVertices[ControlVectorIndices[i + 0]] - LineVertices[ControlVectorIndices[i + 3]]) * m / (2 ^ t)};
+	//	}
+	//}
 
-	}
-
+	//test
+	ControllPoints += {LineVertices[ControlVectorIndices[0]]};
+	ControllPoints += {LineVertices[ControlVectorIndices[0]] + (LineVertices[ControlVectorIndices[1]] - LineVertices[ControlVectorIndices[0]]) /2};
+	ControllPoints += {LineVertices[ControlVectorIndices[1]]};
+	ControllPoints += {LineVertices[ControlVectorIndices[1]] + (LineVertices[ControlVectorIndices[2]] - LineVertices[ControlVectorIndices[1]]) / 2};
+	ControllPoints += {LineVertices[ControlVectorIndices[2]]};
+	ControllPoints += {LineVertices[ControlVectorIndices[2]] + (LineVertices[ControlVectorIndices[3]] - LineVertices[ControlVectorIndices[2]]) / 2};
+	ControllPoints += {LineVertices[ControlVectorIndices[3]]};
+	ControllPoints += {LineVertices[ControlVectorIndices[3]] + (LineVertices[ControlVectorIndices[0]] - LineVertices[ControlVectorIndices[3]]) / 2};
+	ControllPoints += {LineVertices[ControlVectorIndices[0]]};
 
 	//for (size_t i = 0; i < ControlVectorIndices.Num(); i+=4)
 	//{
@@ -243,7 +252,7 @@ void AGrid_Actor::DrawGrid()
 
 	for (size_t i = 0; i < NurbsVertices.Num(); i++)
 	{
-		CreateCorner(NurbsVertices[i], 1.0f, LineVertices, LineTriangles);
+		//CreateCorner(NurbsVertices[i], 1.0f, LineVertices, LineTriangles);
 		
 	}
 
@@ -254,7 +263,7 @@ void AGrid_Actor::DrawGrid()
 
 	GridMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
 }
-#pragma optimize( "", on )
+//#pragma optimize( "", on )
 void AGrid_Actor::DrawSelection()
 {
 	float Y = TileSize / 2.0f;
@@ -331,7 +340,7 @@ void AGrid_Actor::CreateNurbsPoints(int N, const TArray<float>& KnotVector, cons
 	int t = 1;
 	int subs = 4 * (2 ^ t);
 	float len = KnotVector[KnotVector.Num()-1] / subs;
-	float len_counter = 0.0f;
+	float len_counter = 0.0f; //u
 	//fill vector array with new vertices x(u)
 	int M = Weights.Num();
 
