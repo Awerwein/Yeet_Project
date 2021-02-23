@@ -198,75 +198,73 @@ float AGrid_Actor::GridHight() const
 	return NumRows * TileSize;
 }
 
-FVector AGrid_Actor::BaseFuction(int i, int N, FVector u, const TArray<FVector>& KnotVector)
+float AGrid_Actor::BaseFuction(int i, int N, float u, const TArray<float>& KnotVector)
 {
 	//base fuction for B-Splines
 	// 0 <= i <= M
 	// N <= M
 	// z dim is disregarded
 	// int M = ControllPoints.Num() - 1;
-	FVector out = FVector(-1.0f, -1.0f, 0.0f);
+	float out = -1.0f;
 
 	if (N == 0)
 	{
-		if (KnotVector[i].X <= u.X && u.X < KnotVector[i+1].X)
+		if (KnotVector[i] <= u && u < KnotVector[i+1])
 		{
-			out.X = 1.0f;
+			out = 1.0f;
 		}
 		else
 		{
-			out.X = 0.0f;
+			out = 0.0f;
 		}
-
-		if (KnotVector[i].Y <= u.Y && u.Y < KnotVector[i + 1].Y)
-		{
-			out.Y = 1.0f;
-		}
-		else
-		{
-			out.Y = 0.0f;
-		}
-		
 	}
 	else
 	{
-		//X
-		if (KnotVector[i+N].X != KnotVector[i].X && KnotVector[i + N + 1].X != KnotVector[i + 1].X)
+		if (KnotVector[i+N] != KnotVector[i] && KnotVector[i + N + 1] != KnotVector[i + 1])
 		{
-			out.X = ((u.X - KnotVector[i].X) / (KnotVector[i + N].X - KnotVector[i].X)) * BaseFuction(i, N-1, u, KnotVector).X + (( KnotVector[i+ 1+ N].X - u.X) / (KnotVector[i + 1 + N].X - KnotVector[i+1].X)) * BaseFuction(i+1, N - 1, u, KnotVector).X;
+			out = ((u - KnotVector[i]) / (KnotVector[i + N] - KnotVector[i])) * BaseFuction(i, N-1, u, KnotVector) + (( KnotVector[i+ 1+ N] - u) / (KnotVector[i + 1 + N] - KnotVector[i+1])) * BaseFuction(i+1, N - 1, u, KnotVector);
 		}
-		else if (KnotVector[i + N].X != KnotVector[i].X && KnotVector[i + N + 1].X == KnotVector[i + 1].X)
+		else if (KnotVector[i + N] != KnotVector[i] && KnotVector[i + N + 1] == KnotVector[i + 1])
 		{
-			out.X = ((u.X - KnotVector[i].X) / (KnotVector[i + N].X - KnotVector[i].X)) * BaseFuction(i, N - 1, u, KnotVector).X;
+			out = ((u - KnotVector[i]) / (KnotVector[i + N] - KnotVector[i])) * BaseFuction(i, N - 1, u, KnotVector);
 		}
-		else if (KnotVector[i + N].X == KnotVector[i].X && KnotVector[i + N + 1].X != KnotVector[i + 1].X)
+		else if (KnotVector[i + N] == KnotVector[i] && KnotVector[i + N + 1] != KnotVector[i + 1])
 		{
-			out.X = ((KnotVector[i + 1 + N].X - u.X) / (KnotVector[i + 1 + N].X - KnotVector[i + 1].X)) * BaseFuction(i + 1, N - 1, u, KnotVector).X;
-		}
-		else
-		{
-			out.X = 0.0f;
-		}
-		//Y
-		if (KnotVector[i + N].Y != KnotVector[i].Y && KnotVector[i + N + 1].Y != KnotVector[i + 1].Y)
-		{
-			out.Y = ((u.Y - KnotVector[i].Y) / (KnotVector[i + N].Y - KnotVector[i].Y)) * BaseFuction(i, N - 1, u, KnotVector).Y + ((KnotVector[i + 1 + N].Y - u.Y) / (KnotVector[i + 1 + N].Y - KnotVector[i + 1].Y)) * BaseFuction(i + 1, N - 1, u, KnotVector).Y;
-		}
-		else if (KnotVector[i + N].Y != KnotVector[i].Y && KnotVector[i + N + 1].Y == KnotVector[i + 1].Y)
-		{
-			out.Y = ((u.Y - KnotVector[i].Y) / (KnotVector[i + N].Y - KnotVector[i].Y)) * BaseFuction(i, N - 1, u, KnotVector).Y;
-		}
-		else if (KnotVector[i + N].Y == KnotVector[i].Y && KnotVector[i + N + 1].Y != KnotVector[i + 1].Y)
-		{
-			out.Y = ((KnotVector[i + 1 + N].Y - u.Y) / (KnotVector[i + 1 + N].Y - KnotVector[i + 1].Y))* BaseFuction(i + 1, N - 1, u, KnotVector).Y;
+			out = ((KnotVector[i + 1 + N] - u) / (KnotVector[i + 1 + N] - KnotVector[i + 1])) * BaseFuction(i + 1, N - 1, u, KnotVector);
 		}
 		else
 		{
-			out.Y = 0.0f;
-		}
-
+			out = 0.0f;
+		}		
 	}
-	return out; //CHANGE to vektor
+	return out; 
+}
+
+void AGrid_Actor::CreateNurbsPoints(int N, const TArray<float>& KnotVector, const TArray<FVector>& ControllPoints, TArray<FVector>& NurbsVertices, const TArray<float>& Weights)
+{
+	//4*2^t subdivisions u, t later parameter, for now t=1
+	int t = 1;
+	int subs = 4 * (2 ^ t);
+	float len = KnotVector[KnotVector.Num()] / subs;
+	float len_counter = 0.0f;
+	//fill vector array with new vertices x(u)
+	int M = Weights.Num();
+
+	for (size_t k = 0; k < subs; k++)
+	{
+		float R_sum = 0.0f;
+		FVector c_sum = FVector(0.0f, 0.0f, 0.0f);
+		for (size_t i = 0; i < M; i++)
+		{
+			float R_i = Weights[i] * BaseFuction(i, N, len_counter, KnotVector);
+			c_sum.X += R_i * ControllPoints[i].X;
+			c_sum.Y += R_i * ControllPoints[i].Y;
+			R_sum += R_i;
+		}
+		c_sum = c_sum / R_sum;
+		NurbsVertices += {c_sum};
+	}
+	
 }
 
 UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh)

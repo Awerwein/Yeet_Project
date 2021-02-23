@@ -94,7 +94,10 @@ private:
 		float GridHight() const;
 
 	UFUNCTION(BlueprintPure)
-		FVector BaseFuction(int i, int N, FVector u, const TArray<FVector>& KnotVector);
+		float BaseFuction(int i, int N, float u, const TArray<float>& KnotVector);
+
+	UFUNCTION(BlueprintPure)
+		virtual void CreateNurbsPoints(int N, const TArray<float>& KnotVector, const TArray<FVector>& ControllPoints, TArray<FVector>& NurbsVertices, const TArray<float>& Weights);
 
 	UFUNCTION(BlueprintCallable)
 		virtual UMaterialInstanceDynamic* CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh);
