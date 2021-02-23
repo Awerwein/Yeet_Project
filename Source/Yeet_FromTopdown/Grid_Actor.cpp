@@ -83,7 +83,7 @@ void AGrid_Actor::CreateCorner(const FVector Start, const float& Thickness, TArr
 	Vertices += {Zero, One, Two, Three};
 
 }
-
+#pragma optimize( "", off )
 void AGrid_Actor::DrawGrid()
 {
 
@@ -95,11 +95,17 @@ void AGrid_Actor::DrawGrid()
 	float X_end = 0.0f;
 	float Y_start = 0.0f;
 	float Y_end = 0.0f;
+
 	int32 Size = 0;
 
 	TArray<FVector> LineVertices;
 	TArray<int32> LineTriangles;
+	//Problem here, array length calculated once, when actor is created
 	TArray<int32> ControlVectorIndices;
+	for (size_t i = 0; i < 4 * NumRows * NumColumns*10; i++)
+	{
+		ControlVectorIndices += {0};
+	}
 
 	//horizontal line geometry
 	for (size_t i = 0; i < NumRows+1; i++)
@@ -132,34 +138,113 @@ void AGrid_Actor::DrawGrid()
 
 	//corner geometry
 	//inefficient, but readable
-	for (size_t i = 0; i < NumColumns+1; i++)
+	int index_a = 0;
+	int index_b = 0;
+	
+	for (size_t j = 0; j < NumRows+1; j++)
 	{
-		X_i = i * TileSize;
-		for (size_t j = 0; j < NumRows+1; j++)
+		Y_i = j * TileSize; //should be Y_j all along
+		
+		for (size_t i = 0; i < NumColumns + 1; i++)
 		{
-			Y_i = j * TileSize; //should be Y_j all along
+			X_i = i * TileSize;
 			CreateCorner(FVector(X_i, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
 			//corners for nurbs
 			Size = LineVertices.Num();
+			index_a = 4 * NumColumns * j + 4 * i;
+			index_b = 4 * NumRows * (j-1) + 4 * i;
+			//zero
 			if (i< NumColumns && j < NumRows)
 			{
-				ControlVectorIndices += {Size - 3};
+				ControlVectorIndices[index_a] = Size - 3;
 			}
+			//one
 			if (i > 0  && j < NumRows)
 			{
-				ControlVectorIndices += {Size - 2};
+				ControlVectorIndices[index_a-3] = Size - 2;
 			}
+			//two
 			if (i < NumColumns && j > 0)
 			{
-				ControlVectorIndices += {Size - 1};
+				ControlVectorIndices[index_b+3] = Size - 1;
 			}
+			//three
 			if (i > 0 && j > 0)
 			{
-				ControlVectorIndices += {Size};
+				ControlVectorIndices[index_b-2] = Size;
 			}
 
 
 		}
+	}
+	
+
+	//nurbs
+	//construct knot vector U
+	float pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062;//no idea how the constant is supposed to work in ue4, quick hack
+	TArray<float> KnotVector = {0.0f, 0.0f, 0.0f, 0.5f*pi, 0.5f*pi, 1.0f * pi, 1.0f * pi, 1.5f * pi, 1.5f * pi, 2.0f * pi, 2.0f * pi, 2.0f * pi };
+
+	//construct control points c_i
+	TArray<FVector> ControllPoints = {};
+	int t = 1; //2^t subdivisions
+
+	for (size_t i = 0; i < 4; i += 4)
+	{
+		ControllPoints += {LineVertices[ControlVectorIndices[i]]};
+		for (size_t j = 1; j < 3; j++)
+		{
+			ControllPoints += {LineVertices[ControlVectorIndices[i]] + (LineVertices[ControlVectorIndices[i + 1]] - LineVertices[ControlVectorIndices[i]]) * j / (2^t)};
+		}
+		for (size_t k = 1; k < 3; k++)
+		{
+			ControllPoints += {LineVertices[ControlVectorIndices[i + 1]] + (LineVertices[ControlVectorIndices[i + 2]] - LineVertices[ControlVectorIndices[i + 1]]) * k / (2 ^ t)};
+		}
+		for (size_t l = 1; l < 3; l++)
+		{
+			ControllPoints += {LineVertices[ControlVectorIndices[i + 2]] + (LineVertices[ControlVectorIndices[i + 3]] - LineVertices[ControlVectorIndices[i + 2]]) * l / (2 ^ t)};
+		}
+		for (size_t m = 1; m < 3; m++)
+		{
+			ControllPoints += {LineVertices[ControlVectorIndices[i + 3]] + (LineVertices[ControlVectorIndices[i + 0]] - LineVertices[ControlVectorIndices[i + 3]]) * m / (2 ^ t)};
+		}
+
+	}
+
+
+	//for (size_t i = 0; i < ControlVectorIndices.Num(); i+=4)
+	//{
+	//	ControllPoints += {LineVertices[ControlVectorIndices[i]]};
+	//	for (size_t j = 1; j < t+1; j++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i]] + (LineVertices[ControlVectorIndices[i + 1]] - LineVertices[ControlVectorIndices[i]])* j / t};
+	//	}
+	//	for (size_t k = 1; k < t+1; k++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i+1]] + (LineVertices[ControlVectorIndices[i + 2]] - LineVertices[ControlVectorIndices[i+1]]) * k / t};
+	//	}
+	//	for (size_t l = 1; l < t + 1; l++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i + 2]] + (LineVertices[ControlVectorIndices[i + 3]] - LineVertices[ControlVectorIndices[i + 2]]) * l / t};
+	//	}
+	//	for (size_t m = 1; m < t + 1; m++)
+	//	{
+	//		ControllPoints += {LineVertices[ControlVectorIndices[i + 3]] + (LineVertices[ControlVectorIndices[i + 0]] - LineVertices[ControlVectorIndices[i + 3]]) * m / t};
+	//	}
+	//	
+	//}
+
+	//construct weights w_i
+	/*TArray<float> Weights = { 1.0f };*/
+	TArray<float> Weights = { 1.0f, 1.0f/sqrt(2.0f), 1.0f, 1.0f / sqrt(2.0f), 1.0f, 1.0f / sqrt(2.0f), 1.0f, 1.0f / sqrt(2.0f), 1.0f};
+
+	TArray<FVector> NurbsVertices = {};
+	CreateNurbsPoints(2, KnotVector, ControllPoints, NurbsVertices, Weights);
+	
+
+	for (size_t i = 0; i < NurbsVertices.Num(); i++)
+	{
+		CreateCorner(NurbsVertices[i], 1.0f, LineVertices, LineTriangles);
+		
 	}
 
 	TArray<FVector> normals;
@@ -169,7 +254,7 @@ void AGrid_Actor::DrawGrid()
 
 	GridMesh->CreateMeshSection_LinearColor(0, LineVertices, LineTriangles, normals, UV0, vertexColors, tangents, false);
 }
-
+#pragma optimize( "", on )
 void AGrid_Actor::DrawSelection()
 {
 	float Y = TileSize / 2.0f;
@@ -245,7 +330,7 @@ void AGrid_Actor::CreateNurbsPoints(int N, const TArray<float>& KnotVector, cons
 	//4*2^t subdivisions u, t later parameter, for now t=1
 	int t = 1;
 	int subs = 4 * (2 ^ t);
-	float len = KnotVector[KnotVector.Num()] / subs;
+	float len = KnotVector[KnotVector.Num()-1] / subs;
 	float len_counter = 0.0f;
 	//fill vector array with new vertices x(u)
 	int M = Weights.Num();
