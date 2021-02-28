@@ -1,20 +1,40 @@
 # Procedural generiertes Grid Mesh
 
-- auf Grundlage vom Top-Down UE4 Template
-- NxM Grid mit verstellbaren Parametern
-- relevanter code in Grid_Actor.cpp
-
-TODO: nurbs
 ## Überblick
 Die Zielstellung des Projekts war es, in der Unreal Engine 4 ein Mesh dynamisch zu generieren, das ein N x M Grid darstellt. Dabei sollten über mehrere Parameter frei wählbar sein. Zusätzlich sollten die Ecken der Innenflächen durch Implementation von NURBS geglättet werden.
 
 Das Projekt basiert auf dem "Topdown" Templet der Unreal Engine 4. In diesem Template ist eine Figur implementiert, die mit der Maus bewegt werden kann. Die Kamera, die Beleuchtung, die Steuerung und Physik sind hier schon enthalten.
-Ich habe mir zunächst inspiration von einem youtube Tutorial geholt, um mich in die Engine, sowie in das Thema einzuarbeiten. In diesem Tutorial erfolgt die Implementation größtenteils durch UE4 Templates. Ich habe Aspekte davon in Form von C++ code nachgebaut. Der relevante code befindet sich unter '/Source/Yeet_FromTopdown/Grid_Actor.cpp' und der dazugehören header-Datei.
+Ich habe mir zunächst Inspiration von einem youtube [Tutorial](https://www.youtube.com/watch?v=Q4AOmT9aOEM) geholt, um mich in die Engine, sowie in das Thema einzuarbeiten. In diesem Tutorial erfolgt die Implementation größtenteils durch UE4 Templates. Ich habe Aspekte davon in Form von C++ code nachgebaut. Der relevante code befindet sich unter '/Source/Yeet_FromTopdown/Grid_Actor.cpp' und der dazugehören header-Datei.
 
 Leider ist mir beim Hochladen ein faux pas mit git passiert und ich habe einige commits Fortschritt verloren. Der code, mit dem die Screenshots generiert sind, ist nicht mehr ganz zu reproduzieren, aber spiegelt wieder, was ich in der Vorlesung präsentiert hatte (ich hatte noch etwas zu den nurbs ergänzt).
 
 ## Das Grid
+![image](./grid.png)
 
+Fertiggestellte Features:
+- Höhe [x]
+- Breite [x]
+- Opacity [x]
+- Color [x]
+- Linienbreite [x]
+- Controll Points [x]
+- NURBS [-]
+- Triangles mit diskretisierten NURBS
+
+Unter Angabe der Parameter werden erst die Vertices und Triangles für horizontalen und vertikale Linien, dann für die Eckpunkte generiert. Durch geschickt gewählte Reihenfolg beim Einfügen in das Array wird sichergestellt, dass die Normalen in die selbe Richtung zeigen.
+
+## Controll Vertices
+![image](./ControllPoints.png)
+
+Beim erstellen der Eckpunkte der Linien befülle ich ein weiteres Array mit Indices für die Eckpunkte der Innenflächen. Dann werden die Punkte dazwischen berechnet und einem ControllPoint Array hinzugefügt. Es konnten beliebig viele Unterteilungen (t) gewählt werden.
+
+## NURBS
+![image](./Nurbs_N3.png)
+Ich habe eine rekursive Berechnung der Basisfunktion für ein beliebigen Grad N implementiert. Dabei wurden zu den ControllPoint Gewichte generiert. Der Knotenvektor U wuchs auch dynamisch, jedoch habe ich nicht die richtige Kombination aus Gewichten und Knotvektor finden können um einen Kreis zu bilden, wie auf dem Bild zu sehen ist.
+
+Es war geplant, ein Menü in das "Spiel" einzubauen, wo die parameter dynamisch eingestellt werden könnten. Dazu bin ich nicht mehr gekommen. Es sollte möglich sein, die Parameter zu übergeben, so dass die Gewichte und die Menge der Unterteilungen angepasst wird. Das ist ebenfalls auf der Strecke geblieben.
+
+Die Kontrollpunkte werden je Feld gespeichert. Aus Effizienzbetrachtung ist das allerdings nicht nötig, denn wenn man die NURBS vertices für das erste Feld berechnet, kann man sie auch durch Translation einfach auf die restlichen Felder kopieren ohne sie neu berechnen zu müssen.
 
 ## Rendering in UE4
 
