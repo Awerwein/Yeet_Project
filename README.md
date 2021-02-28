@@ -11,7 +11,10 @@ Die Zielstellung des Projekts war es, in der Unreal Engine 4 ein Mesh dynamisch 
 Das Projekt basiert auf dem "Topdown" Templet der Unreal Engine 4. In diesem Template ist eine Figur implementiert, die mit der Maus bewegt werden kann. Die Kamera, die Beleuchtung, die Steuerung und Physik sind hier schon enthalten.
 Ich habe mir zunächst inspiration von einem youtube Tutorial geholt, um mich in die Engine, sowie in das Thema einzuarbeiten. In diesem Tutorial erfolgt die Implementation größtenteils durch UE4 Templates. Ich habe Aspekte davon in Form von C++ code nachgebaut. Der relevante code befindet sich unter '/Source/Yeet_FromTopdown/Grid_Actor.cpp' und der dazugehören header-Datei.
 
+Leider ist mir beim Hochladen ein faux pas mit git passiert und ich habe einige commits Fortschritt verloren. Der code, mit dem die Screenshots generiert sind, ist nicht mehr ganz zu reproduzieren, aber spiegelt wieder, was ich in der Vorlesung präsentiert hatte (ich hatte noch etwas zu den nurbs ergänzt).
+
 ## Das Grid
+
 
 ## Rendering in UE4
 
