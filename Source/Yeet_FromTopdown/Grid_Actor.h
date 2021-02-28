@@ -20,8 +20,8 @@ UCLASS()
 class YEET_FROMTOPDOWN_API AGrid_Actor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AGrid_Actor();
 
@@ -72,7 +72,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 		TArray<int32> SelectionTriangles;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

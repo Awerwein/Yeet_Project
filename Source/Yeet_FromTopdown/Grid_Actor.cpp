@@ -29,7 +29,7 @@ AGrid_Actor::AGrid_Actor()
 void AGrid_Actor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 
 
 
@@ -119,7 +119,7 @@ void AGrid_Actor::DrawGrid()
 			CreateLine(FVector(X_start, Y_i, 0.0f), FVector(X_end, Y_i, 0.0f), LineThickness, LineVertices, LineTriangles);
 		}
 
-		
+
 	}
 
 	//vertical line geometry
@@ -133,18 +133,18 @@ void AGrid_Actor::DrawGrid()
 			Y_end = Y_start + TileSize;
 			CreateLine(FVector(X_i, Y_start, 0.0f), FVector(X_i, Y_end, 0.0f), LineThickness, LineVertices, LineTriangles);
 		}
-		
+
 	}
 
 	//corner geometry
 	//inefficient, but readable
 	int index_a = 0;
 	int index_b = 0;
-	
+
 	for (size_t j = 0; j < NumRows+1; j++)
 	{
 		Y_i = j * TileSize; //should be Y_j all along
-		
+
 		for (size_t i = 0; i < NumColumns + 1; i++)
 		{
 			X_i = i * TileSize;
@@ -177,7 +177,7 @@ void AGrid_Actor::DrawGrid()
 
 		}
 	}
-	
+
 
 	//nurbs
 	//construct knot vector U
@@ -239,7 +239,7 @@ void AGrid_Actor::DrawGrid()
 	//	{
 	//		ControllPoints += {LineVertices[ControlVectorIndices[i + 3]] + (LineVertices[ControlVectorIndices[i + 0]] - LineVertices[ControlVectorIndices[i + 3]]) * m / t};
 	//	}
-	//	
+	//
 	//}
 
 	//construct weights w_i
@@ -248,12 +248,12 @@ void AGrid_Actor::DrawGrid()
 
 	TArray<FVector> NurbsVertices = {};
 	CreateNurbsPoints(2, KnotVector, ControllPoints, NurbsVertices, Weights);
-	
+
 
 	for (size_t i = 0; i < NurbsVertices.Num(); i++)
 	{
 		//CreateCorner(NurbsVertices[i], 1.0f, LineVertices, LineTriangles);
-		
+
 	}
 
 	TArray<FVector> normals;
@@ -329,9 +329,9 @@ float AGrid_Actor::BaseFuction(int i, int N, float u, const TArray<float>& KnotV
 		else
 		{
 			out = 0.0f;
-		}		
+		}
 	}
-	return out; 
+	return out;
 }
 
 void AGrid_Actor::CreateNurbsPoints(int N, const TArray<float>& KnotVector, const TArray<FVector>& ControllPoints, TArray<FVector>& NurbsVertices, const TArray<float>& Weights)
@@ -358,7 +358,7 @@ void AGrid_Actor::CreateNurbsPoints(int N, const TArray<float>& KnotVector, cons
 		c_sum = c_sum / R_sum;
 		NurbsVertices += {c_sum};
 	}
-	
+
 }
 
 UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor Color, const float Opacity, UProceduralMeshComponent* Mesh)
@@ -369,9 +369,9 @@ UMaterialInstanceDynamic* AGrid_Actor::CreateMaterialInstance(const FLinearColor
 		LineMaterialInstance = Mesh->CreateDynamicMaterialInstance(0, Material);
 		LineMaterialInstance->SetVectorParameterValue(FName("Color"), Color);
 		LineMaterialInstance->SetScalarParameterValue(FName("Opacity"), Opacity);
-		
+
 	}
-	
+
 	if (LineMaterialInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Material Instance Could not be created"));
@@ -396,4 +396,3 @@ void AGrid_Actor::TileToGrid(const int& Row, const int& Column, const bool Cente
 void AGrid_Actor::SetSelectedTile(const int& Row, const int& Column)
 {
 }
-
